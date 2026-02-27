@@ -19,6 +19,7 @@ class BehaviorLog(BaseModel):
     mistakes: int
     lesson_id: str
     focus_score: float
+    study_duration: float
 
 class CognitiveResult(BaseModel):
     user_id: str

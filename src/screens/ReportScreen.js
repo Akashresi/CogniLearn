@@ -43,6 +43,7 @@ export default function ReportScreen() {
                 <Text style={styles.reduction}>
                     {weekly.mistake_reduction ? '✅ Mistake Reduction Noticed' : '⚠️ More mistakes than last week'}
                 </Text>
+                <Text style={styles.engagement}>Engagement Score: {weekly.engagement_score}%</Text>
             </Card>
 
             <Card title="Monthly Progress Graph">
@@ -56,6 +57,7 @@ export default function ReportScreen() {
                 <Text style={styles.reduction}>
                     {monthly.mistake_reduction ? '✅ Consistent Monthly Reduction' : '⚠️ Need more practice'}
                 </Text>
+                <Text style={styles.engagement}>Monthly Engagement: {monthly.engagement_score}%</Text>
             </Card>
 
         </ScrollView>
@@ -67,5 +69,6 @@ const styles = StyleSheet.create({
     loading: { flex: 1, textAlign: 'center', marginTop: 50 },
     percent: { fontSize: 20, fontWeight: 'bold', color: 'green', marginBottom: 10 },
     trendText: { fontSize: 16, marginBottom: 5 },
-    reduction: { fontSize: 16, fontWeight: '500', marginTop: 10, color: '#333' }
+    reduction: { fontSize: 16, fontWeight: '500', marginTop: 10, color: '#333' },
+    engagement: { fontSize: 16, fontWeight: 'bold', color: '#007bff', marginTop: 5 }
 });

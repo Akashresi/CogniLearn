@@ -33,7 +33,8 @@ export default function LearningScreen() {
                 retry_count: retryCount,
                 mistakes: mistakes,
                 lesson_id: 'lesson_1_math',
-                focus_score: 100 - (mistakes * 5) - (retryCount * 2) // Simple dummy calculate
+                focus_score: 100 - (mistakes * 5) - (retryCount * 2), // Simple dummy calculate
+                study_duration: responseTime // Using responseTime as proxy for duration for now
             });
             alert('Great job! Answer correct and behavior logged.');
 

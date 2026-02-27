@@ -45,17 +45,17 @@ class CognitiveAI:
         # 4. Recommendation System (Rule-based)
         recommendations = []
         if learning_pattern == "Visual":
-            recommendations.append("Use more visual diagrams and infographics.")
+            recommendations.append("Recommend high-quality visual explanations and diagrams for upcoming topics.")
         elif learning_pattern == "Auditory":
-            recommendations.append("Listen to educational podcasts and audio instructions.")
+            recommendations.append("Listen to educational podcasts and verbal explanations.")
         elif learning_pattern == "Kinesthetic":
-            recommendations.append("Engage in hands-on activities and interactive tasks.")
+            recommendations.append("Engage in hands-on interactive tasks and practical simulations.")
             
         if risk == 1 or mistakes > 5:
-            recommendations.append("Alert: Found learning difficulties. Suggest short, focused sessions and extra practice tasks.")
+            recommendations.append("High mistake rate detected. Switching to 'Integrated Practice Mode' for reinforcement.")
         
         if focus_score < 50:
-            recommendations.append("Focus is dropping. Recommend short 10-minute study sessions with frequent breaks.")
+            recommendations.append("Focus score is low. Recommending short, 15-minute high-intensity sessions with breaks.")
             
         return {
             "learning_pattern": learning_pattern,

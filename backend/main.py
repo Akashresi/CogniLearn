@@ -144,11 +144,16 @@ def get_weekly_report(user_id: str, current_user: dict = Depends(decode_access_t
     improved = False
     if len(trend) > 1 and trend[-1] > trend[0]:
          improved = True
-    
+
+    # Calculate Engagement Score (simple heuristic)
+    avg_focus = recent['focus_score'].mean() if 'focus_score' in recent.columns else 80
+    engagement = min(100, (avg_focus * 0.7) + (len(recent) * 2))
+
     return {
         "accuracy_trend": trend,
         "improvement_percentage": 20 if improved else 5,
-        "mistake_reduction": improved
+        "mistake_reduction": improved,
+        "engagement_score": round(engagement, 2)
     }
 
 @app.get("/monthly-report/{user_id}")
@@ -173,10 +178,24 @@ def get_monthly_report(user_id: str, current_user: dict = Depends(decode_access_
     
     improved = mock_weeks[-1] > mock_weeks[0]
     
+    # Calculate Engagement Score
+    avg_focus = df['focus_score'].mean() if 'focus_score' in df.columns else 75
+    engagement = min(100, (avg_focus * 0.6) + (len(df) * 0.5))
+
     return {
         "accuracy_trend": mock_weeks,
         "improvement_percentage": 40 if improved else 0,
-        "mistake_reduction": improved
+        "mistake_reduction": improved,
+        "engagement_score": round(engagement, 2)
+    }
+
+@app.get("/report/{user_id}")
+def get_combined_report(user_id: str, current_user: dict = Depends(decode_access_token)):
+    weekly = get_weekly_report(user_id, current_user)
+    monthly = get_monthly_report(user_id, current_user)
+    return {
+        "weekly": weekly,
+        "monthly": monthly
     }
 
 if __name__ == "__main__":
