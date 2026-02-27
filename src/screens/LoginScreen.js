@@ -47,17 +47,21 @@ export default function LoginScreen() {
                     secureTextEntry
                 />
 
-                <View style={styles.pickerContainer}>
-                    <Text style={styles.pickerLabel}>Role Setup (For Signup):</Text>
-                    <Picker
-                        selectedValue={role}
-                        style={styles.picker}
-                        onValueChange={(itemValue) => setRole(itemValue)}
-                    >
-                        <Picker.Item label="Student" value="student" />
-                        <Picker.Item label="Parent" value="parent" />
-                        <Picker.Item label="Teacher" value="teacher" />
-                    </Picker>
+                <View style={styles.roleContainer}>
+                    <Text style={styles.pickerLabel}>Select Role for Signup:</Text>
+                    <View style={styles.roleButtons}>
+                        {['student', 'parent', 'teacher'].map((r) => (
+                            <TouchableOpacity
+                                key={r}
+                                style={[styles.roleBtn, role === r && styles.roleBtnActive]}
+                                onPress={() => setRole(r)}
+                            >
+                                <Text style={[styles.roleBtnText, role === r && styles.roleBtnTextActive]}>
+                                    {r.charAt(0).toUpperCase() + r.slice(1)}
+                                </Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
                 </View>
 
                 {isLoading ? (
@@ -89,10 +93,9 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
     container: {
-        flexGrow: 1,
         padding: 20,
-        justifyContent: 'center',
         backgroundColor: '#e9ecef',
+        minHeight: '100%',
     },
     title: {
         fontSize: 34,
@@ -127,21 +130,36 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         backgroundColor: '#fafafa',
     },
-    pickerContainer: {
+    roleContainer: {
         marginBottom: 20,
     },
-    pickerLabel: {
-        marginBottom: 4,
-        color: '#555',
-        fontWeight: '500',
+    roleButtons: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 5,
     },
-    picker: {
-        height: 50,
-        width: '100%',
-        backgroundColor: '#fafafa',
+    roleBtn: {
+        flex: 1,
+        paddingVertical: 8,
         borderWidth: 1,
         borderColor: '#ddd',
         borderRadius: 8,
+        marginHorizontal: 4,
+        alignItems: 'center',
+        backgroundColor: '#fafafa',
+    },
+    roleBtnActive: {
+        backgroundColor: '#007bff',
+        borderColor: '#007bff',
+    },
+    roleBtnText: {
+        color: '#555',
+        fontSize: 12,
+        fontWeight: '500',
+    },
+    roleBtnTextActive: {
+        color: '#fff',
+        fontWeight: 'bold',
     },
     authButtons: {
         flexDirection: 'row',

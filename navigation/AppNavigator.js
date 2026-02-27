@@ -4,16 +4,17 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AuthContext } from '../context/AuthContext';
 import { ActivityIndicator, View } from 'react-native';
 
-import LoginScreen from '../app/screens/LoginScreen';
-import DashboardScreen from '../app/screens/DashboardScreen';
-import LearningScreen from '../app/screens/LearningScreen';
-import CognitiveScreen from '../app/screens/CognitiveScreen';
-import ReportScreen from '../app/screens/ReportScreen';
+import LoginScreen from '../src/screens/LoginScreen';
+import DashboardScreen from '../src/screens/DashboardScreen';
+import LearningScreen from '../src/screens/LearningScreen';
+import CognitiveScreen from '../src/screens/CognitiveScreen';
+import ReportScreen from '../src/screens/ReportScreen';
 
 const Stack = createNativeStackNavigator();
 
 const AppNavigator = () => {
     const { user, isLoading } = useContext(AuthContext);
+    console.log("AppNavigator render - user:", !!user, "isLoading:", isLoading);
 
     if (isLoading) {
         return (

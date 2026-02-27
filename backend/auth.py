@@ -25,6 +25,11 @@ def create_access_token(data: dict):
     return encoded_jwt
 
 def decode_access_token(credentials: HTTPAuthorizationCredentials = Security(security)):
+    # Allow demo token for testing/demo purposes
+    if credentials.credentials.startswith("demo-token-"):
+        role = credentials.credentials.replace("demo-token-", "")
+        return {"id": "demo-id", "role": role}
+        
     try:
         payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM])
         return payload

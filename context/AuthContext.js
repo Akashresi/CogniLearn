@@ -11,9 +11,15 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         loadUserData();
+        // Safety timeout: stop loading after 5 seconds no matter what
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 5000);
+        return () => clearTimeout(timer);
     }, []);
 
     const loadUserData = async () => {
+        setIsLoading(true);
         try {
             const storedToken = await AsyncStorage.getItem('token');
             const storedUser = await AsyncStorage.getItem('user');
@@ -26,6 +32,8 @@ export const AuthProvider = ({ children }) => {
             }
         } catch (error) {
             console.log('Error loading data', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -88,7 +96,8 @@ export const AuthProvider = ({ children }) => {
 
     const demoLogin = async (userRole) => {
         setIsLoading(true);
-        const mockToken = "demo-token-123";
+        // We use a special prefix so the backend can verify the role for demo-token
+        const mockToken = `demo-token-${userRole}`;
         const userData = { id: "demo-id", email: `demo@${userRole}.com` };
 
         await AsyncStorage.setItem('token', mockToken);

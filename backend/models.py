@@ -26,3 +26,9 @@ class CognitiveResult(BaseModel):
     focus_score: float
     curiosity_index: float
     recommendations: List[str]
+
+class ChatRequest(BaseModel):
+    query: str
+
+class ImageRequest(BaseModel):
+    prompt: str
