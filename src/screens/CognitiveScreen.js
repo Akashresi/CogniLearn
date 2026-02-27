@@ -6,6 +6,7 @@ import Card from '../../components/Card';
 import { Theme } from '../theme/Theme';
 import { Ionicons } from '@expo/vector-icons';
 import * as Progress from 'react-native-progress';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function CognitiveScreen() {
     const { user } = useContext(AuthContext);
@@ -31,7 +32,7 @@ export default function CognitiveScreen() {
         return (
             <View style={styles.center}>
                 <ActivityIndicator size="large" color={Theme.colors.primary} />
-                <Text style={styles.loadingText}>Synthesizing Cognitive Data...</Text>
+                <Text style={styles.loadingText}>Synthesizing cognitive neural pathways...</Text>
             </View>
         );
     }
@@ -45,38 +46,44 @@ export default function CognitiveScreen() {
 
     const MetricItem = ({ label, value, color, icon }) => (
         <View style={styles.metricCard}>
-            <View style={[styles.metricIcon, { backgroundColor: color + '15' }]}>
+            <View style={[styles.metricIcon, { backgroundColor: color + '20' }]}>
                 <Ionicons name={icon} size={22} color={color} />
             </View>
             <View>
                 <Text style={styles.metricLabel}>{label}</Text>
-                <Text style={[styles.metricValue, { color }]}>{value}</Text>
+                <Text style={[styles.metricValue, { color: '#fff' }]}>{value}</Text>
             </View>
         </View>
     );
 
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-            <View style={styles.heroSection}>
-                <View style={[styles.typeBadge, { backgroundColor: Theme.colors.primary }]}>
-                    <Ionicons name={typeIcons[data.learning_type] || 'brain'} size={32} color="#fff" />
-                    <Text style={styles.typeText}>{data.learning_type} Learner</Text>
-                </View>
-                <Text style={styles.heroTitle}>Your Cognitive Architecture</Text>
-                <Text style={styles.heroSub}>Based on your recent problem-solving patterns</Text>
-            </View>
+            <LinearGradient
+                colors={['#1e293b', '#0f172a']}
+                style={styles.heroSection}
+            >
+                <LinearGradient
+                    colors={Theme.colors.primaryGradient}
+                    style={styles.typeBadge}
+                >
+                    <Ionicons name={typeIcons[data.learning_type] || 'brain'} size={44} color="#fff" />
+                    <Text style={styles.typeText}>{data.learning_type.toUpperCase()} LEARNER</Text>
+                </LinearGradient>
+                <Text style={styles.heroTitle}>Cognitive Analysis</Text>
+                <Text style={styles.heroSub}>Your neural learning profile is 98% complete</Text>
+            </LinearGradient>
 
             <View style={styles.metricsGrid}>
-                <MetricItem label="Focus Depth" value={`${data.focus_score}%`} color={Theme.colors.primary} icon="disc" />
-                <MetricItem label="Curiosity Index" value={`${data.curiosity_index}/100`} color={Theme.colors.secondary} icon="bulb" />
-                <MetricItem label="Retention Rank" value="High" color={Theme.colors.accent} icon="ribbon" />
-                <MetricItem label="Risk Level" value={data.at_risk ? "High" : "Low"} color={data.at_risk ? Theme.colors.error : Theme.colors.success} icon="shield-checkmark" />
+                <MetricItem label="FOCUS DEPTH" value={`${data.focus_score}%`} color={Theme.colors.primary} icon="disc" />
+                <MetricItem label="CURIOSITY" value={`${data.curiosity_index}/100`} color={Theme.colors.secondary} icon="bulb" />
+                <MetricItem label="RETENTION" value="HIGH" color={Theme.colors.accent} icon="ribbon" />
+                <MetricItem label="SYSTEM RISK" value={data.at_risk ? "CRITICAL" : "STABLE"} color={data.at_risk ? Theme.colors.error : Theme.colors.success} icon="shield-checkmark" />
             </View>
 
             <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>Smart Recommendations</Text>
+                <Text style={styles.sectionTitle}>Smart Insights</Text>
                 <View style={styles.aiTag}>
-                    <Text style={styles.aiTagText}>AI POWERED</Text>
+                    <Text style={styles.aiTagText}>PROMPT AI</Text>
                 </View>
             </View>
 
@@ -88,39 +95,39 @@ export default function CognitiveScreen() {
                     activeOpacity={0.7}
                 >
                     <View style={styles.recHeader}>
-                        <View style={styles.recIcon}>
+                        <LinearGradient colors={['rgba(255,173,96,0.2)', 'rgba(255,95,95,0.2)']} style={styles.recIcon}>
                             <Ionicons name="sparkles" size={18} color={Theme.colors.accent} />
-                        </View>
+                        </LinearGradient>
                         <Text style={styles.recText}>{rec}</Text>
                         <Ionicons
                             name={expandedRec === i ? "chevron-up" : "chevron-down"}
                             size={20}
-                            color={Theme.colors.border}
+                            color="rgba(255,255,255,0.3)"
                         />
                     </View>
                     {expandedRec === i && (
                         <View style={styles.recDetail}>
                             <Text style={styles.detailText}>
-                                Implementing this suggestion can improve your retention by up to 15% based on your current focus spikes.
+                                AI Logic: Your neural fatigue is lowest in the morning. Switching to intensive math modules now will increase long-term retention by 20%.
                             </Text>
                         </View>
                     )}
                 </TouchableOpacity>
             ))}
 
-            <Card title="Engagement Mastery" style={styles.progressCard}>
-                <Text style={styles.progLabel}>Current focus level for visual tasks</Text>
+            <Card glass title="NEURAL LOAD MANAGEMENT" style={styles.progressCard}>
+                <Text style={styles.progLabel}>Current focus optimization level</Text>
                 <Progress.Bar
                     progress={data.focus_score / 100}
                     width={null}
-                    height={12}
+                    height={10}
                     color={Theme.colors.primary}
-                    unfilledColor={Theme.colors.border}
+                    unfilledColor="rgba(255,255,255,0.1)"
                     borderWidth={0}
-                    borderRadius={6}
-                    style={{ marginVertical: 12 }}
+                    borderRadius={5}
+                    style={{ marginVertical: 15 }}
                 />
-                <Text style={styles.progSub}>Target: 90% for optimal cognitive load management.</Text>
+                <Text style={styles.progSub}>Maintain focus above 85% to trigger "Elite Learner" status.</Text>
             </Card>
 
             <View style={{ height: 40 }} />
@@ -130,34 +137,34 @@ export default function CognitiveScreen() {
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: Theme.colors.background },
-    center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    loadingText: { marginTop: 12, color: Theme.colors.textSecondary, fontWeight: '600' },
+    center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Theme.colors.background },
+    loadingText: { marginTop: 12, color: Theme.colors.textSecondary, fontWeight: '700', fontSize: 12 },
 
-    heroSection: { alignItems: 'center', padding: Theme.spacing.xl, backgroundColor: Theme.colors.surface, borderBottomLeftRadius: 30, borderBottomRightRadius: 30, ...Theme.shadows.sm },
-    typeBadge: { width: 120, height: 120, borderRadius: 60, justifyContent: 'center', alignItems: 'center', marginBottom: Theme.spacing.md, ...Theme.shadows.md },
-    typeText: { color: '#fff', fontWeight: 'bold', fontSize: 14, marginTop: 8 },
-    heroTitle: { fontSize: 24, fontWeight: '800', color: Theme.colors.text, textAlign: 'center' },
-    heroSub: { fontSize: 13, color: Theme.colors.textSecondary, marginTop: 4, textAlign: 'center' },
+    heroSection: { alignItems: 'center', padding: Theme.spacing.xl, borderBottomLeftRadius: 40, borderBottomRightRadius: 40, ...Theme.shadows.lg },
+    typeBadge: { width: 140, height: 140, borderRadius: 70, justifyContent: 'center', alignItems: 'center', marginBottom: Theme.spacing.lg, ...Theme.shadows.md, borderWidth: 2, borderColor: 'rgba(255,255,255,0.1)' },
+    typeText: { color: '#fff', fontWeight: '900', fontSize: 10, marginTop: 10, letterSpacing: 1 },
+    heroTitle: { fontSize: 28, fontWeight: '900', color: '#fff', textAlign: 'center' },
+    heroSub: { fontSize: 12, color: Theme.colors.textSecondary, marginTop: 4, textAlign: 'center', fontWeight: '600' },
 
     metricsGrid: { flexDirection: 'row', flexWrap: 'wrap', padding: Theme.spacing.md, gap: Theme.spacing.md },
-    metricCard: { flex: 1, minWidth: '45%', backgroundColor: Theme.colors.surface, padding: Theme.spacing.md, borderRadius: Theme.roundness.lg, flexDirection: 'row', alignItems: 'center', gap: 12, ...Theme.shadows.sm },
-    metricIcon: { width: 40, height: 40, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
-    metricLabel: { fontSize: 10, fontWeight: '700', color: Theme.colors.textSecondary, textTransform: 'uppercase' },
-    metricValue: { fontSize: 18, fontWeight: '800' },
+    metricCard: { flex: 1, minWidth: '45%', backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: Theme.spacing.md, borderRadius: Theme.roundness.xl, flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.08)' },
+    metricIcon: { width: 44, height: 44, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
+    metricLabel: { fontSize: 9, fontWeight: '800', color: Theme.colors.textSecondary, letterSpacing: 1 },
+    metricValue: { fontSize: 18, fontWeight: '900' },
 
-    sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: Theme.spacing.lg, marginTop: Theme.spacing.lg, marginBottom: Theme.spacing.md },
-    sectionTitle: { fontSize: 18, fontWeight: '800', color: Theme.colors.text },
-    aiTag: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4, backgroundColor: Theme.colors.accent + '20' },
-    aiTagText: { fontSize: 10, fontWeight: 'bold', color: Theme.colors.accent },
+    sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: Theme.spacing.lg, marginTop: Theme.spacing.xl, marginBottom: Theme.spacing.md },
+    sectionTitle: { fontSize: 18, fontWeight: '900', color: '#fff' },
+    aiTag: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: 6, backgroundColor: Theme.colors.primary + '20' },
+    aiTagText: { fontSize: 9, fontWeight: '900', color: Theme.colors.primary, letterSpacing: 1 },
 
-    recCard: { marginHorizontal: Theme.spacing.md, backgroundColor: Theme.colors.surface, borderRadius: Theme.roundness.md, marginBottom: Theme.spacing.sm, padding: Theme.spacing.md, ...Theme.shadows.sm },
+    recCard: { marginHorizontal: Theme.spacing.md, backgroundColor: 'rgba(255, 255, 255, 0.03)', borderRadius: Theme.roundness.lg, marginBottom: Theme.spacing.sm, padding: Theme.spacing.lg, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.05)' },
     recHeader: { flexDirection: 'row', alignItems: 'center', gap: Theme.spacing.md },
-    recIcon: { width: 32, height: 32, borderRadius: 16, backgroundColor: Theme.colors.accent + '10', justifyContent: 'center', alignItems: 'center' },
-    recText: { flex: 1, fontSize: 14, fontWeight: '600', color: Theme.colors.text },
-    recDetail: { marginTop: 12, borderTopWidth: 1, borderTopColor: Theme.colors.border, paddingTop: 12 },
-    detailText: { fontSize: 13, color: Theme.colors.textSecondary, lineHeight: 18, fontStyle: 'italic' },
+    recIcon: { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center' },
+    recText: { flex: 1, fontSize: 14, fontWeight: '700', color: 'rgba(255,255,255,0.9)' },
+    recDetail: { marginTop: 15, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)', paddingTop: 15 },
+    detailText: { fontSize: 13, color: Theme.colors.textSecondary, lineHeight: 20, fontStyle: 'italic' },
 
     progressCard: { marginHorizontal: Theme.spacing.md, marginTop: Theme.spacing.lg },
-    progLabel: { fontSize: 14, color: Theme.colors.text, fontWeight: '600' },
-    progSub: { fontSize: 11, color: Theme.colors.textSecondary }
+    progLabel: { fontSize: 12, color: 'rgba(255,255,255,0.7)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 },
+    progSub: { fontSize: 11, color: Theme.colors.textSecondary, fontWeight: '500' }
 });

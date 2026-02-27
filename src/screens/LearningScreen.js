@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Dimensions } from 'react-native';
 import API from '../../services/api';
 import { AuthContext } from '../../context/AuthContext';
 import Card from '../../components/Card';
 import { Theme } from '../theme/Theme';
 import { Ionicons } from '@expo/vector-icons';
 import * as Progress from 'react-native-progress';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function LearningScreen() {
     const { user, role } = useContext(AuthContext);
@@ -16,13 +17,14 @@ export default function LearningScreen() {
     const [timer, setTimer] = useState(0);
 
     const questions = [
-        { id: 1, title: 'Basic Math', text: 'What is 15 * 6?', options: ['80', '90', '105'], correct: 1 },
-        { id: 2, title: 'Logic', text: 'If a train is traveling at 60 mph, how far will it go in 2 hours?', options: ['90 miles', '120 miles', '150 miles'], correct: 1 },
-        { id: 3, title: 'Physics', text: 'What is the speed of light approx?', options: ['300k km/s', '150k km/s', '500k km/s'], correct: 0 },
+        { id: 1, title: 'QUANTUM ARITHMETIC', text: 'Determine the product: 15 * 6', options: ['80', '90', '105'], correct: 1 },
+        { id: 2, title: 'SPATIAL LOGIC', text: 'If a particle velocity is 60 units, distance at T=2 is?', options: ['90 units', '120 units', '150 units'], correct: 1 },
+        { id: 3, title: 'ASTROPHYSICS', text: 'Approximate speed of light C in vacuum?', options: ['300k km/s', '150k km/s', '500k km/s'], correct: 0 },
     ];
 
     useEffect(() => {
         setStartTime(Date.now());
+        setTimer(0);
         const interval = setInterval(() => {
             setTimer(t => t + 1);
         }, 1000);
@@ -35,7 +37,6 @@ export default function LearningScreen() {
         if (!isCorrect) {
             setMistakes((prev) => prev + 1);
             setRetryCount((prev) => prev + 1);
-            // Non-blocking feedback
             return;
         }
 
@@ -59,7 +60,7 @@ export default function LearningScreen() {
                 setMistakes(0);
                 setTimer(0);
             } else {
-                alert('Congratulations! You finished all modules.');
+                alert('COGNITIVE SYNC COMPLETE: All neural modules verified.');
                 setActiveQuestion(0);
             }
         } catch (err) {
@@ -70,9 +71,9 @@ export default function LearningScreen() {
     if (role === 'parent') {
         return (
             <View style={styles.center}>
-                <Ionicons name="lock-closed" size={60} color={Theme.colors.border} />
-                <Text style={styles.roleText}>Parent View Only</Text>
-                <Text style={styles.roleSub}>Check the Progress tab for your child's data.</Text>
+                <Ionicons name="lock-closed" size={60} color="rgba(255,255,255,0.1)" />
+                <Text style={styles.roleText}>RESTRICTED ACCESS</Text>
+                <Text style={styles.roleSub}>Parent clearance required for active learning. Access neural logs in Progress tab.</Text>
             </View>
         );
     }
@@ -81,17 +82,21 @@ export default function LearningScreen() {
         return (
             <View style={styles.teacherPane}>
                 <View style={styles.teacherHeader}>
-                    <Text style={styles.teacherTitle}>Task Management</Text>
-                    <Text style={styles.teacherSub}>Assign new cognitive tasks to your class</Text>
+                    <Text style={styles.teacherTitle}>COMMAND CENTER</Text>
+                    <Text style={styles.teacherSub}>Initiate and monitor neural learning sequences</Text>
                 </View>
-                <Card title="Quick Actions">
+                <Card glass title="NEURAL ASSIGNMENTS">
                     <TouchableOpacity style={styles.assignBtn}>
-                        <Ionicons name="add-circle" size={24} color="#fff" />
-                        <Text style={styles.assignText}>Create New Math Quiz</Text>
+                        <LinearGradient colors={Theme.colors.primaryGradient} style={styles.assignGradient}>
+                            <Ionicons name="add-circle" size={24} color="#fff" />
+                            <Text style={styles.assignText}>DEPLOY NEW MATH MODULE</Text>
+                        </LinearGradient>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.assignBtn, { backgroundColor: Theme.colors.secondary, marginTop: 10 }]}>
-                        <Ionicons name="add-circle" size={24} color="#fff" />
-                        <Text style={styles.assignText}>Create Logic Challenge</Text>
+                    <TouchableOpacity style={[styles.assignBtn, { marginTop: 15 }]}>
+                        <LinearGradient colors={Theme.colors.secondaryGradient} style={styles.assignGradient}>
+                            <Ionicons name="analytics" size={24} color="#fff" />
+                            <Text style={styles.assignText}>INITIATE LOGIC SYNC</Text>
+                        </LinearGradient>
                     </TouchableOpacity>
                 </Card>
             </View>
@@ -102,94 +107,106 @@ export default function LearningScreen() {
     const progress = (activeQuestion + 1) / questions.length;
 
     return (
-        <ScrollView style={styles.container}>
-            <View style={styles.progressContainer}>
-                <View style={styles.progressBarWrapper}>
-                    <Progress.Bar
-                        progress={progress}
-                        width={null}
-                        height={10}
-                        color={Theme.colors.primary}
-                        unfilledColor={Theme.colors.border}
-                        borderWidth={0}
-                        borderRadius={5}
-                    />
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+            <View style={styles.learningHeader}>
+                <View style={styles.progressHeader}>
+                    <Text style={styles.moduleTitle}>ENABLING NEURAL SYNC</Text>
+                    <Text style={styles.qCount}>INDEX {activeQuestion + 1} OF {questions.length}</Text>
                 </View>
-                <Text style={styles.progressText}>Question {activeQuestion + 1} of {questions.length}</Text>
+                <Progress.Bar
+                    progress={progress}
+                    width={null}
+                    height={6}
+                    color={Theme.colors.primary}
+                    unfilledColor="rgba(255,255,255,0.05)"
+                    borderWidth={0}
+                    borderRadius={3}
+                />
             </View>
 
-            <Card style={styles.questionCard}>
-                <View style={styles.cardHeader}>
-                    <View style={styles.tag}>
+            <Card glass style={styles.questionCard}>
+                <View style={styles.cardInfo}>
+                    <LinearGradient colors={Theme.colors.primaryGradient} style={styles.tag}>
                         <Text style={styles.tagText}>{currentQ.title}</Text>
-                    </View>
-                    <View style={styles.timer}>
-                        <Ionicons name="timer-outline" size={16} color={Theme.colors.textSecondary} />
-                        <Text style={styles.timerText}>{timer}s</Text>
+                    </LinearGradient>
+                    <View style={styles.timerBox}>
+                        <Ionicons name="pulse" size={16} color={Theme.colors.error} />
+                        <Text style={[styles.timerText, { color: Theme.colors.error }]}>{timer}S SYNCING</Text>
                     </View>
                 </View>
+
                 <Text style={styles.questionText}>{currentQ.text}</Text>
 
-                <View style={styles.optionsContainer}>
+                <View style={styles.optionsGrid}>
                     {currentQ.options.map((option, idx) => (
                         <TouchableOpacity
                             key={idx}
                             style={styles.optionBtn}
                             onPress={() => submitAnswer(idx)}
+                            activeOpacity={0.7}
                         >
-                            <Text style={styles.optionText}>{option}</Text>
-                            <Ionicons name="chevron-forward" size={20} color={Theme.colors.border} />
+                            <LinearGradient
+                                colors={['rgba(255,255,255,0.05)', 'rgba(255,255,255,0.02)']}
+                                style={styles.optionGradient}
+                            >
+                                <Text style={styles.optionText}>{option}</Text>
+                                <Ionicons name="flash-outline" size={18} color="rgba(255,255,255,0.3)" />
+                            </LinearGradient>
                         </TouchableOpacity>
                     ))}
                 </View>
             </Card>
 
-            <View style={styles.helpBox}>
-                <Ionicons name="bulb-outline" size={24} color={Theme.colors.accent} />
-                <Text style={styles.helpText}>Tip: Analyze the question before jumping to options. Accuracy boosts your focus score!</Text>
+            <View style={styles.aiTipContainer}>
+                <LinearGradient
+                    colors={['rgba(99,102,241,0.1)', 'rgba(168,85,247,0.1)']}
+                    style={styles.aiTip}
+                >
+                    <Ionicons name="sparkles" size={24} color={Theme.colors.primary} />
+                    <Text style={styles.aiTipText}>
+                        <Text style={{ fontWeight: '900', color: Theme.colors.primary }}>AI NEURAL TIP: </Text>
+                        Focus on spatial reasoning to decrease response time by 12%.
+                    </Text>
+                </LinearGradient>
             </View>
+            <View style={{ height: 40 }} />
         </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: Theme.colors.background },
-    center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Theme.spacing.xl },
-    roleText: { fontSize: 20, fontWeight: 'bold', color: Theme.colors.text, marginTop: Theme.spacing.md },
-    roleSub: { fontSize: 14, color: Theme.colors.textSecondary, textAlign: 'center', marginTop: 8 },
+    center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Theme.spacing.xl, backgroundColor: Theme.colors.background },
+    roleText: { fontSize: 24, fontWeight: '900', color: '#fff', marginTop: 20 },
+    roleSub: { fontSize: 13, color: Theme.colors.textSecondary, textAlign: 'center', marginTop: 10, lineHeight: 20 },
 
-    teacherPane: { flex: 1, padding: Theme.spacing.md },
-    teacherHeader: { marginBottom: Theme.spacing.lg, paddingHorizontal: Theme.spacing.sm },
-    teacherTitle: { fontSize: 24, fontWeight: '800', color: Theme.colors.text },
-    teacherSub: { fontSize: 14, color: Theme.colors.textSecondary },
-    assignBtn: { height: 50, borderRadius: Theme.roundness.md, backgroundColor: Theme.colors.primary, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10 },
-    assignText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+    teacherPane: { flex: 1, padding: Theme.spacing.lg },
+    teacherHeader: { marginBottom: 30 },
+    teacherTitle: { fontSize: 28, fontWeight: '900', color: '#fff' },
+    teacherSub: { fontSize: 13, color: Theme.colors.textSecondary, fontWeight: '600' },
+    assignBtn: { borderRadius: Theme.roundness.lg, overflow: 'hidden' },
+    assignGradient: { height: 60, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 12 },
+    assignText: { color: '#fff', fontWeight: '900', fontSize: 14, letterSpacing: 1 },
 
-    progressContainer: { padding: Theme.spacing.md },
-    progressBarWrapper: { marginBottom: 8 },
-    progressText: { fontSize: 12, fontWeight: '700', color: Theme.colors.textSecondary, textAlign: 'right' },
+    learningHeader: { padding: Theme.spacing.lg, marginBottom: 10 },
+    progressHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 12 },
+    moduleTitle: { fontSize: 10, fontWeight: '900', color: Theme.colors.primary, letterSpacing: 2 },
+    qCount: { fontSize: 10, fontWeight: '800', color: 'rgba(255,255,255,0.4)', letterSpacing: 1 },
 
-    questionCard: { marginHorizontal: Theme.spacing.md, padding: Theme.spacing.lg },
-    cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Theme.spacing.md },
-    tag: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: Theme.roundness.full, backgroundColor: Theme.colors.primary + '15' },
-    tagText: { fontSize: 10, fontWeight: 'bold', color: Theme.colors.primary, textTransform: 'uppercase' },
-    timer: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-    timerText: { fontSize: 12, fontWeight: '600', color: Theme.colors.textSecondary },
-    questionText: { fontSize: 20, fontWeight: '700', color: Theme.colors.text, lineHeight: 28, marginBottom: Theme.spacing.xl },
+    questionCard: { marginHorizontal: Theme.spacing.md, paddingVertical: 30, paddingHorizontal: 20 },
+    cardInfo: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 25 },
+    tag: { paddingHorizontal: 12, paddingVertical: 5, borderRadius: 6 },
+    tagText: { fontSize: 9, fontWeight: '900', color: '#fff', letterSpacing: 1.5 },
+    timerBox: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: 'rgba(239, 68, 68, 0.1)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6 },
+    timerText: { fontSize: 9, fontWeight: '900', letterSpacing: 1 },
+    questionText: { fontSize: 24, fontWeight: '900', color: '#fff', lineHeight: 34, textAlign: 'center', marginBottom: 40 },
 
-    optionsContainer: { gap: Theme.spacing.sm },
-    optionBtn: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: Theme.spacing.md,
-        borderWidth: 1.5,
-        borderColor: Theme.colors.border,
-        borderRadius: Theme.roundness.md,
-        backgroundColor: Theme.colors.surface
-    },
-    optionText: { fontSize: 16, fontWeight: '600', color: Theme.colors.text },
+    optionsGrid: { gap: 12 },
+    optionBtn: { borderRadius: Theme.roundness.lg, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' },
+    optionGradient: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20 },
+    optionText: { fontSize: 17, fontWeight: '800', color: '#fff' },
 
-    helpBox: { flexDirection: 'row', margin: Theme.spacing.md, padding: Theme.spacing.md, backgroundColor: Theme.colors.accent + '10', borderRadius: Theme.roundness.md, gap: Theme.spacing.md, alignItems: 'center' },
-    helpText: { flex: 1, fontSize: 13, color: Theme.colors.textSecondary, fontStyle: 'italic' }
+    aiTipContainer: { paddingHorizontal: Theme.spacing.md, marginTop: 20 },
+    aiTip: { flexDirection: 'row', padding: 18, borderRadius: Theme.roundness.xl, gap: 15, alignItems: 'center', borderWidth: 1, borderColor: 'rgba(99,102,241,0.2)' },
+    aiTipText: { flex: 1, fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 19, fontWeight: '500' }
 });

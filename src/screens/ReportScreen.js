@@ -1,17 +1,20 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native';
 import API from '../../services/api';
 import { AuthContext } from '../../context/AuthContext';
 import Card from '../../components/Card';
 import { CustomLineChart } from '../../components/Chart';
 import { Theme } from '../theme/Theme';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+
+const { width } = Dimensions.get('window');
 
 export default function ReportScreen() {
     const { user } = useContext(AuthContext);
     const [weekly, setWeekly] = useState(null);
     const [monthly, setMonthly] = useState(null);
-    const [viewMode, setViewMode] = useState('weekly'); // 'weekly' or 'monthly'
+    const [viewMode, setViewMode] = useState('weekly');
 
     useEffect(() => {
         fetchReports();
@@ -34,94 +37,93 @@ export default function ReportScreen() {
         return (
             <View style={styles.center}>
                 <ActivityIndicator size="large" color={Theme.colors.primary} />
-                <Text style={styles.loadingText}>Compiling Progress Reports...</Text>
+                <Text style={styles.loadingText}>Generating multi-dimensional report...</Text>
             </View>
         );
     }
 
     const currentData = viewMode === 'weekly' ? weekly : monthly;
 
-    const Badge = ({ icon, label, achieved }) => (
-        <View style={[styles.badgeItem, !achieved && { opacity: 0.3 }]}>
-            <View style={[styles.badgeCircle, { backgroundColor: achieved ? Theme.colors.secondary + '20' : Theme.colors.border }]}>
-                <Ionicons name={icon} size={28} color={achieved ? Theme.colors.secondary : Theme.colors.textSecondary} />
-            </View>
-            <Text style={styles.badgeLabel}>{label}</Text>
+    const AchievementBadge = ({ icon, label, achieved, gradient }) => (
+        <View style={[styles.badgeItem, !achieved && { opacity: 0.25 }]}>
+            <LinearGradient
+                colors={achieved ? gradient : ['rgba(255,255,255,0.05)', 'rgba(255,255,255,0.1)']}
+                style={styles.badgeCircle}
+            >
+                <Ionicons name={icon} size={28} color={achieved ? "#fff" : "rgba(255,255,255,0.3)"} />
+            </LinearGradient>
+            <Text style={styles.badgeLabel}>{label.toUpperCase()}</Text>
         </View>
     );
 
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-            <View style={styles.toggleContainer}>
-                <TouchableOpacity
-                    style={[styles.toggleBtn, viewMode === 'weekly' && styles.activeToggle]}
-                    onPress={() => setViewMode('weekly')}
-                >
-                    <Text style={[styles.toggleText, viewMode === 'weekly' && styles.activeToggleText]}>Weekly</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[styles.toggleBtn, viewMode === 'monthly' && styles.activeToggle]}
-                    onPress={() => setViewMode('monthly')}
-                >
-                    <Text style={[styles.toggleText, viewMode === 'monthly' && styles.activeToggleText]}>Monthly</Text>
-                </TouchableOpacity>
-            </View>
-
-            <View style={styles.summaryOverview}>
-                <View style={styles.overviewItem}>
-                    <Text style={styles.overviewValue}>{currentData.improvement_percentage}%</Text>
-                    <Text style={styles.overviewLabel}>Growth</Text>
-                    <Ionicons name="trending-up" size={16} color={Theme.colors.success} />
-                </View>
-                <View style={styles.overviewDivider} />
-                <View style={styles.overviewItem}>
-                    <Text style={styles.overviewValue}>{currentData.engagement_score}</Text>
-                    <Text style={styles.overviewLabel}>Engagement</Text>
-                    <Ionicons name="heart" size={16} color={Theme.colors.error} />
-                </View>
-                <View style={styles.overviewDivider} />
-                <View style={styles.overviewItem}>
-                    <Text style={styles.overviewValue}>{currentData.mistake_reduction ? "Yes" : "No"}</Text>
-                    <Text style={styles.overviewLabel}>Accuracy Up</Text>
-                    <Ionicons name="checkmark-circle" size={16} color={Theme.colors.primary} />
+            <View style={styles.header}>
+                <Text style={styles.title}>Neural Progress</Text>
+                <View style={styles.toggleContainer}>
+                    <TouchableOpacity
+                        style={[styles.toggleBtn, viewMode === 'weekly' && styles.activeToggle]}
+                        onPress={() => setViewMode('weekly')}
+                    >
+                        <Text style={[styles.toggleText, viewMode === 'weekly' && styles.activeToggleText]}>WEEKLY</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.toggleBtn, viewMode === 'monthly' && styles.activeToggle]}
+                        onPress={() => setViewMode('monthly')}
+                    >
+                        <Text style={[styles.toggleText, viewMode === 'monthly' && styles.activeToggleText]}>MONTHLY</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
 
-            <Card title={`${viewMode === 'weekly' ? 'Daily' : 'Weekly'} Accuracy Trend`} style={styles.chartCard}>
+            <View style={styles.overviewGrid}>
+                <View style={styles.overviewCard}>
+                    <Text style={styles.overviewLabel}>GROWTH</Text>
+                    <Text style={[styles.overviewValue, { color: Theme.colors.success }]}>+{currentData.improvement_percentage}%</Text>
+                </View>
+                <View style={styles.overviewCard}>
+                    <Text style={styles.overviewLabel}>ENGAGEMENT</Text>
+                    <Text style={[styles.overviewValue, { color: Theme.colors.primary }]}>{currentData.engagement_score}</Text>
+                </View>
+                <View style={styles.overviewCard}>
+                    <Text style={styles.overviewLabel}>ACCURACY</Text>
+                    <Text style={[styles.overviewValue, { color: Theme.colors.accent }]}>{currentData.mistake_reduction ? "ZEN" : "STABLE"}</Text>
+                </View>
+            </View>
+
+            <Card glass title="NEURAL SYNC TREND" style={styles.chartCard}>
                 <CustomLineChart
                     data={{
-                        labels: viewMode === 'weekly' ? ['M', 'T', 'W', 'Th', 'F'] : ['W1', 'W2', 'W3', 'W4'],
+                        labels: viewMode === 'weekly' ? ['M', 'T', 'W', 'T', 'F'] : ['W1', 'W2', 'W3', 'W4'],
                         datasets: [{ data: currentData.accuracy_trend || [0, 0, 0, 0, 0] }]
                     }}
                 />
             </Card>
 
-            <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>Achievements & Badges</Text>
-            </View>
-
+            <Text style={styles.sectionTitle}>Neural Achievements</Text>
             <View style={styles.badgesGrid}>
-                <Badge icon="ribbon" label="Early Bird" achieved={true} />
-                <Badge icon="flame" label="Focus Pro" achieved={currentData.engagement_score > 80} />
-                <Badge icon="trophy" label="Accuracy King" achieved={currentData.mistake_reduction} />
-                <Badge icon="star" label="Top 10%" achieved={false} />
+                <AchievementBadge icon="rocket" label="Fast Orbit" achieved={true} gradient={['#F59E0B', '#FCD34D']} />
+                <AchievementBadge icon="brain" label="Deep Sync" achieved={currentData.engagement_score > 80} gradient={['#6366F1', '#A855F7']} />
+                <AchievementBadge icon="shield" label="Safe Logic" achieved={currentData.mistake_reduction} gradient={['#10B981', '#34D399']} />
+                <AchievementBadge icon="diamond" label="Elite Tier" achieved={false} gradient={['#EC4899', '#F472B6']} />
             </View>
 
-            <Card title="Quick Analysis" style={styles.analysisCard}>
-                <View style={styles.analysisItem}>
-                    <Ionicons
-                        name={currentData.mistake_reduction ? "happy-outline" : "sad-outline"}
-                        size={32}
-                        color={currentData.mistake_reduction ? Theme.colors.success : Theme.colors.error}
-                    />
+            <Card glass title="COGNITIVE SUMMARY" style={styles.analysisCard}>
+                <View style={styles.analysisBox}>
+                    <LinearGradient
+                        colors={currentData.mistake_reduction ? ['#10B981', '#34D399'] : ['#EF4444', '#F87171']}
+                        style={styles.analysisIcon}
+                    >
+                        <Ionicons name={currentData.mistake_reduction ? "checkmark-done" : "construct"} size={24} color="#fff" />
+                    </LinearGradient>
                     <View style={{ flex: 1 }}>
                         <Text style={styles.analysisTitle}>
-                            {currentData.mistake_reduction ? "Outstanding Accuracy!" : "Room for Improvement"}
+                            {currentData.mistake_reduction ? "PATTERN MASTERED" : "LOGIC RE-SYNC REQUIRED"}
                         </Text>
                         <Text style={styles.analysisSub}>
                             {currentData.mistake_reduction
-                                ? "You've consistently reduced errors. Your cognitive focus is sharpening."
-                                : "Try slowing down during the logic questions to reduce mistake rates."}
+                                ? "Your neural mistake rates have plummeted by 30%. You are entering a state of high-accuracy flow."
+                                : "A minor drift in logic detected. Engaging supplementary modules will stabilize your accuracy."}
                         </Text>
                     </View>
                 </View>
@@ -134,54 +136,33 @@ export default function ReportScreen() {
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: Theme.colors.background },
-    center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    loadingText: { marginTop: 12, color: Theme.colors.textSecondary, fontWeight: '600' },
+    center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Theme.colors.background },
+    loadingText: { marginTop: 12, color: Theme.colors.textSecondary, fontWeight: '700', fontSize: 12 },
 
-    toggleContainer: {
-        flexDirection: 'row',
-        backgroundColor: Theme.colors.border + '50',
-        borderRadius: Theme.roundness.md,
-        margin: Theme.spacing.lg,
-        padding: 4
-    },
-    toggleBtn: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: Theme.roundness.sm },
-    activeToggle: { backgroundColor: Theme.colors.surface, ...Theme.shadows.sm },
-    toggleText: { fontWeight: '700', color: Theme.colors.textSecondary, fontSize: 14 },
+    header: { padding: Theme.spacing.lg, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    title: { fontSize: 24, fontWeight: '900', color: '#fff' },
+    toggleContainer: { flexDirection: 'row', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 4 },
+    toggleBtn: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 10 },
+    activeToggle: { backgroundColor: 'rgba(255,255,255,0.1)' },
+    toggleText: { fontSize: 10, fontWeight: '900', color: 'rgba(255,255,255,0.4)', letterSpacing: 1 },
     activeToggleText: { color: Theme.colors.primary },
 
-    summaryOverview: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        backgroundColor: Theme.colors.surface,
-        marginHorizontal: Theme.spacing.lg,
-        paddingVertical: Theme.spacing.lg,
-        paddingHorizontal: Theme.spacing.md,
-        borderRadius: Theme.roundness.xl,
-        ...Theme.shadows.sm,
-        marginBottom: Theme.spacing.lg
-    },
-    overviewItem: { flex: 1, alignItems: 'center' },
-    overviewDivider: { width: 1, height: '80%', backgroundColor: Theme.colors.border, alignSelf: 'center' },
-    overviewValue: { fontSize: 20, fontWeight: '800', color: Theme.colors.text },
-    overviewLabel: { fontSize: 10, fontWeight: '700', color: Theme.colors.textSecondary, textTransform: 'uppercase', marginTop: 2 },
+    overviewGrid: { flexDirection: 'row', paddingHorizontal: Theme.spacing.md, gap: 10, marginBottom: Theme.spacing.lg },
+    overviewCard: { flex: 1, backgroundColor: 'rgba(255,255,255,0.03)', padding: Theme.spacing.md, borderRadius: Theme.roundness.lg, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)', alignItems: 'center' },
+    overviewLabel: { fontSize: 8, fontWeight: '800', color: 'rgba(255,255,255,0.5)', letterSpacing: 1, marginBottom: 4 },
+    overviewValue: { fontSize: 20, fontWeight: '900' },
 
-    chartCard: { marginHorizontal: Theme.spacing.lg },
+    chartCard: { marginHorizontal: Theme.spacing.md, backgroundColor: 'rgba(30, 41, 59, 0.7)' },
 
-    sectionHeader: { paddingHorizontal: Theme.spacing.lg, marginTop: Theme.spacing.xl, marginBottom: Theme.spacing.md },
-    sectionTitle: { fontSize: 18, fontWeight: '800', color: Theme.colors.text },
+    sectionTitle: { fontSize: 16, fontWeight: '900', color: '#fff', marginHorizontal: Theme.spacing.lg, marginTop: 30, marginBottom: 20, letterSpacing: 1, textTransform: 'uppercase' },
+    badgesGrid: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: Theme.spacing.xl },
+    badgeItem: { alignItems: 'center', gap: 8 },
+    badgeCircle: { width: 64, height: 64, borderRadius: 32, justifyContent: 'center', alignItems: 'center', ...Theme.shadows.md, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+    badgeLabel: { fontSize: 8, fontWeight: '900', color: 'rgba(255,255,255,0.6)', textAlign: 'center' },
 
-    badgesGrid: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingHorizontal: Theme.spacing.lg,
-        marginBottom: Theme.spacing.lg
-    },
-    badgeItem: { alignItems: 'center', gap: 6 },
-    badgeCircle: { width: 64, height: 64, borderRadius: 32, justifyContent: 'center', alignItems: 'center', ...Theme.shadows.sm },
-    badgeLabel: { fontSize: 10, fontWeight: '700', color: Theme.colors.textSecondary, textAlign: 'center' },
-
-    analysisCard: { marginHorizontal: Theme.spacing.lg, backgroundColor: '#fff' },
-    analysisItem: { flexDirection: 'row', gap: Theme.spacing.md, alignItems: 'center' },
-    analysisTitle: { fontSize: 16, fontWeight: '800', color: Theme.colors.text },
-    analysisSub: { fontSize: 13, color: Theme.colors.textSecondary, lineHeight: 18, marginTop: 4 }
+    analysisCard: { marginHorizontal: Theme.spacing.md },
+    analysisBox: { flexDirection: 'row', gap: Theme.spacing.lg, alignItems: 'center' },
+    analysisIcon: { width: 50, height: 50, borderRadius: 15, justifyContent: 'center', alignItems: 'center' },
+    analysisTitle: { fontSize: 14, fontWeight: '900', color: '#fff', letterSpacing: 0.5 },
+    analysisSub: { fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 18, marginTop: 6, fontStyle: 'italic' }
 });

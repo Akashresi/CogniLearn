@@ -102,15 +102,21 @@ def get_dashboard(user_id: str, current_user: dict = Depends(decode_access_token
         }
     elif role == "parent":
         return {
+            "study_time": 150, # Representing child's time
+            "focus_score": 78,
+            "learning_progress": [5, 15, 25, 45, 60],
             "child_performance": "Good - Steady Improvement",
             "weekly_overview": "Completed 5 lessons, 85% average focus. Visual learning style preferred.",
             "alerts": ["Your child reached their goal today!"]
         }
-    else:
+    else: # teacher
         return {
+            "study_time": 450, # Aggregate class time
+            "focus_score": 82,
+            "learning_progress": [30, 35, 40, 55, 70],
             "class_overview": "30 students active, 25 improving continuously",
             "at_risk_students": ["Student A", "Student B - Suggested 1-on-1 Help"],
-            "alerts": []
+            "alerts": ["Class focus index is up by 12% today."]
         }
 
 @app.get("/cognitive/{user_id}")
@@ -127,66 +133,87 @@ def get_cognitive(user_id: str, current_user: dict = Depends(decode_access_token
 
 @app.get("/weekly-report/{user_id}")
 def get_weekly_report(user_id: str, current_user: dict = Depends(decode_access_token)):
-    logs = list(behavior_logs_collection.find({"user_id": user_id}))
+    logs = list(behavior_logs_collection.find({"user_id": user_id}, {"_id": 0}))
     if not logs:
         # Dummy if no data yet
-        return {"accuracy_trend": [60, 65, 70, 75, 80], "improvement_percentage": 15, "mistake_reduction": True}
+        return {
+            "accuracy_trend": [60, 65, 70, 75, 80], 
+            "improvement_percentage": 15, 
+            "mistake_reduction": True,
+            "engagement_score": 88
+        }
     
     # Process with Pandas
     df = pd.DataFrame(logs)
     if 'mistakes' not in df.columns:
-        return {"accuracy_trend": [60, 65, 70, 75, 80], "improvement_percentage": 15, "mistake_reduction": True}
+        return {
+            "accuracy_trend": [60, 65, 70, 75, 80], 
+            "improvement_percentage": 15, 
+            "mistake_reduction": True,
+            "engagement_score": 88
+        }
     
     # Get last 5 recorded entries to mimic 5 days trend
     recent = df.tail(5)
-    trend = [100 - (m * 5) for m in recent['mistakes']]
+    trend = [int(100 - (m * 5)) for m in recent['mistakes']]
     
     improved = False
     if len(trend) > 1 and trend[-1] > trend[0]:
          improved = True
 
     # Calculate Engagement Score (simple heuristic)
-    avg_focus = recent['focus_score'].mean() if 'focus_score' in recent.columns else 80
-    engagement = min(100, (avg_focus * 0.7) + (len(recent) * 2))
+    avg_focus = float(recent['focus_score'].mean()) if 'focus_score' in recent.columns else 80.0
+    engagement = min(100.0, (avg_focus * 0.7) + (len(recent) * 2))
 
     return {
         "accuracy_trend": trend,
         "improvement_percentage": 20 if improved else 5,
         "mistake_reduction": improved,
-        "engagement_score": round(engagement, 2)
+        "engagement_score": float(round(engagement, 2))
     }
 
 @app.get("/monthly-report/{user_id}")
 def get_monthly_report(user_id: str, current_user: dict = Depends(decode_access_token)):
-    logs = list(behavior_logs_collection.find({"user_id": user_id}))
+    logs = list(behavior_logs_collection.find({"user_id": user_id}, {"_id": 0}))
     if not logs:
         # Dummy if no data yet
-        return {"accuracy_trend": [50, 60, 70, 85], "improvement_percentage": 35, "mistake_reduction": True}
+        return {
+            "accuracy_trend": [50, 60, 70, 85], 
+            "improvement_percentage": 35, 
+            "mistake_reduction": True,
+            "engagement_score": 92
+        }
     
     # Evaluate with Pandas
     df = pd.DataFrame(logs)
     if len(df) < 4:
-         return {"accuracy_trend": [50, 60, 70, 85], "improvement_percentage": 35, "mistake_reduction": True}
+         return {
+             "accuracy_trend": [50, 60, 70, 85], 
+             "improvement_percentage": 35, 
+             "mistake_reduction": True,
+             "engagement_score": 92
+         }
     
     # Calculate mock weekly averages
+    # Convert to standard Python int/float to avoid numpy serialization issues
     mock_weeks = [
-         100 - df.iloc[len(df)//4 * 0]['mistakes'] * 5,
-         100 - df.iloc[len(df)//4 * 1]['mistakes'] * 5,
-         100 - df.iloc[len(df)//4 * 2]['mistakes'] * 5,
-         100 - df.iloc[-1]['mistakes'] * 5
+         int(100 - df.iloc[len(df)//4 * 0]['mistakes'] * 5),
+         int(100 - df.iloc[len(df)//4 * 1]['mistakes'] * 5),
+         int(100 - df.iloc[len(df)//4 * 2]['mistakes'] * 5),
+         int(100 - df.iloc[-1]['mistakes'] * 5)
     ]
     
     improved = mock_weeks[-1] > mock_weeks[0]
     
     # Calculate Engagement Score
-    avg_focus = df['focus_score'].mean() if 'focus_score' in df.columns else 75
-    engagement = min(100, (avg_focus * 0.6) + (len(df) * 0.5))
+    avg_focus = float(df['focus_score'].mean()) if 'focus_score' in df.columns else 75.0
+    engagement = min(100.0, (avg_focus * 0.6) + (len(df) * 0.5))
 
     return {
         "accuracy_trend": mock_weeks,
         "improvement_percentage": 40 if improved else 0,
         "mistake_reduction": improved,
-        "engagement_score": round(engagement, 2)
+        "engagement_score": float(round(engagement, 2))
     }
 
 @app.get("/report/{user_id}")
