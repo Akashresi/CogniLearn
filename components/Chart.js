@@ -1,28 +1,35 @@
 import React from 'react';
 import { Dimensions, View } from 'react-native';
 import { LineChart, BarChart } from 'react-native-chart-kit';
+import { Theme } from '../src/theme/Theme';
 
 const screenWidth = Dimensions.get('window').width;
 
 const defaultData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-    datasets: [{ data: [20, 45, 28, 80, 99, 43] }]
+    labels: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+    datasets: [{ data: [20, 45, 28, 80, 99] }]
 };
 
-export const CustomLineChart = ({ data = defaultData, title }) => {
+export const CustomLineChart = ({ data = defaultData }) => {
     return (
         <View style={{ marginVertical: 8, alignItems: 'center' }}>
             <LineChart
                 data={data}
-                width={screenWidth - 32}
-                height={220}
+                width={screenWidth - 64}
+                height={200}
                 chartConfig={{
-                    backgroundColor: '#ffffff',
-                    backgroundGradientFrom: '#ffffff',
-                    backgroundGradientTo: '#ffffff',
+                    backgroundColor: Theme.colors.surface,
+                    backgroundGradientFrom: Theme.colors.surface,
+                    backgroundGradientTo: Theme.colors.surface,
                     decimalPlaces: 0,
-                    color: (opacity = 1) => `rgba(0, 122, 255, ${opacity})`,
-                    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                    color: (opacity = 1) => `rgba(79, 70, 229, ${opacity})`,
+                    labelColor: (opacity = 1) => `rgba(107, 114, 128, ${opacity})`,
+                    style: { borderRadius: 16 },
+                    propsForDots: {
+                        r: "6",
+                        strokeWidth: "2",
+                        stroke: Theme.colors.primary
+                    }
                 }}
                 bezier
                 style={{ borderRadius: 16 }}
@@ -36,16 +43,16 @@ export const CustomBarChart = ({ data = defaultData }) => {
         <View style={{ marginVertical: 8, alignItems: 'center' }}>
             <BarChart
                 data={data}
-                width={screenWidth - 32}
-                height={220}
+                width={screenWidth - 64}
+                height={200}
                 yAxisLabel=""
                 chartConfig={{
-                    backgroundColor: '#ffffff',
-                    backgroundGradientFrom: '#ffffff',
-                    backgroundGradientTo: '#ffffff',
+                    backgroundColor: Theme.colors.surface,
+                    backgroundGradientFrom: Theme.colors.surface,
+                    backgroundGradientTo: Theme.colors.surface,
                     decimalPlaces: 0,
-                    color: (opacity = 1) => `rgba(52, 199, 89, ${opacity})`,
-                    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                    color: (opacity = 1) => `rgba(16, 185, 129, ${opacity})`,
+                    labelColor: (opacity = 1) => `rgba(107, 114, 128, ${opacity})`,
                 }}
                 style={{ borderRadius: 16 }}
             />
